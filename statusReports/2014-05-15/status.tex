@@ -1,37 +1,90 @@
-\title{A Very Simple \LaTeXe{} Template}
+\title{Status Report for \today}
 \author{
-        Vitaly Surazhsky \\
-                Department of Computer Science\\
-        Technion---Israel Institute of Technology\\
-        Technion City, Haifa 32000, \underline{Israel}
-            \and
-        Yossi Gil\\
-        Department of Computer Science\\
-        Technion---Israel Institute of Technology\\
-        Technion City, Haifa 32000, \underline{Israel}
+        Sriram Venkatesh \\
+        Victoria University of Wellington \\
+        venksriram@gmail.com \\
 }
-\date{\today}
+
 
 \documentclass[12pt]{article}
-
+\setlength\parindent{0pt}
 \begin{document}
 \maketitle
 
-\begin{abstract}
-This is the paper's abstract \ldots
-\end{abstract}
+\section{Action Points}
+This weeks action points were:
+\begin{itemize}
+  \item Define the Problem
+  \item Threats
+  \item Avenues of Investigation
+\end{itemize}
 
-\section{Introduction}
-This is time for all good men to come to the aid of their party!
 
-\paragraph{Outline}
-The remainder of this article is organized as follows.
-Section~\ref{previous work} gives account of previous work.
-Our new and exciting results are described in Section~\ref{results}.
-Finally, Section~\ref{conclusions} gives the conclusions.
+\section{Problem Description}
+\subsection{Situation}
+Situation: Given a web application, that requires access to external data store.
+This data store requires the server to authenticate itself before given access to the information inside. \\
+
+We need to protect this credential info in case a attacker gets hold of the server.
+Therefore we encrypt these credentials. But, how do we protect the encryption keys that we used? \\
+
+These valuable encryption keys need to be securely managed and have proper 
+authorization mechanisms to ensure that key external services are not compromised. \\
+
+These encryption keys are required to encrypt and decrypt credentials (at run-time) that are required to login into external systems. \\
+
+Access to these encryption keys, allows attackers to gain access to these services. \\
+
+Given that we need a proper management procedure to securely mange these keys throughout the application life cycle. \\
+
+\subsection{Objectives}
+There are four main high-level objectives of secure key management:
+\begin{itemize}
+\item Securing Encryption Keys through their Life cycle
+\item Secure Key Storage
+\item Key Usage Authorization
+\item Accountability
+\end{itemize}
+
+\paragraph{Secure Key Life cycle} 
+A secure key management plan needs to ensure that the life cycle of encryption keys used to secure the credential information is secure. \\
+
+This also involves the applications life cycle in terms of how it gets the keys at boot, and how to destroys any keys during the shutdown of these services. The application also requires the key  to decrypt the credential information at runtime, to ensure that it pass the clear-text password to the database. \\  
+
+It also involves looking into different parts of a system, decomposing the entities involved, and tracking the movement of the key. \\
+
+Operations such as 
+\begin{itemize}
+\item Key and Key Pair generation - How does the system generate the key? When does it generate the key? 
+there are different ways a key can be generated at this point. Do you use another server? Do you have a file? Do you pass the key in runtime.
+
+\item Key Transport and Sharing - How do we transport this key to the application when it is required? When do we do it? Once the key is used how do we destroy it? 
+
+\item Secure Key Destruction  upon application's life cycle is over.
+\end{itemize}
+
+\paragraph{Secure Key Storage}
+Keys must be securely stored throughout their operation life. Details regarding storage media protection requirements depend heavily on the keys roles in support the various elements of the application. 
+
+\paragraph{Key Usage Authorization}
+Measure must be implemented to ensure that keys can be used only for authorized purposes by authorized entities
+and that authorized access to keys cannot be interrupted by others. Control of Access, Authentication of users and confidentiality protection are all critical to meeting this objective.
+
+
+\section{Entities}
+Please see Google Doc for reference.
+
+
+
+
+\section{Threats}
+Please see Google doc for reference.
+
+
+
 
 \section{Previous work}\label{previous work}
-A much longer \LaTeXe{} example was written by Gil~\cite{Gil:02}.
+A much longer example was written by Gil~\cite{Gil:02}.
 
 \section{Results}\label{results}
 In this section we describe the results.
@@ -40,7 +93,7 @@ In this section we describe the results.
 We worked hard, and achieved very little.
 
 \bibliographystyle{abbrv}
-\bibliography{simple}
+\bibliography{bib}
 
 \end{document}
-This is never printed
+
