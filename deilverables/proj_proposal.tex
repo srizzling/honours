@@ -3,7 +3,7 @@
 %% $Date: 2010/04/23 02:40:16 $
 %% $Author: kevin $
 
-\documentclass[11pt, a4paper, twoside, openright]{report}
+\documentclass[11pt, a4paper, twoside, openright, notitlepage]{report}
 
 \usepackage{float} % lets you have non-floating floats
 
@@ -44,7 +44,7 @@
 \otherdegree{Bachelor of Engineering}
 % here to specify degree
 
-\supervisors{Dr Ian Welch and Dr Kris Bubendorfer}
+\supervisors{Dr Ian Welch, Michael Gannon,  Nick Clarke, Dr Kris Bubendorfer}
 
 
 % Comment this out if you want the date printed.
@@ -58,9 +58,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
-  This document gives some ideas about how to write a project
-  proposal, and provides a template for a proposal. You should discuss
-  your proposal with your supervisor.
+The objective of this report is describe and demonstrate the progress of the Web Application Key Management project and develop a plan for the remainder of the project. The project looks at how applications can manage encrypted credential keys for secure web applications. The project is split into two phases, where we look into the traditional case and also a modern case into the cloud. The literature review conducted finds there have been various attempts to solve the issue. This report looks at a comparative view of the best option by comparing various threat models and abstractions. 
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,15 +99,16 @@ Web applications require credentials to access these external systems.
 \section*{2 Literature Review}
 \subsection*{2.1 Related Work}
 
-KeyNote
+\subsubsection*{2.1.1 KeyNote}
+\subsubsection*{2.1.2 PERMIS}
+\subsubsection*{2.1.3 TPL}
+\subsubsection*{2.1.4 Kerberos}
 
-PERMIS
+\subsection*{2.2 Key Management Standards}
+\subsubsection*{2.2.1 PKI}
 
-TPL
+\subsection*{2.3 Tomcat}
 
-Kerberos
-
-PKI
 
 
 \section*{3 Project Progress}
@@ -118,7 +117,7 @@ Given a
 
 
 
-\subsection*{3.1.1 Decoupling the Application}
+\subsection*{3.2 Decoupling the Application}
 Before defining a solution to the problem, its important to define and construct a threat model to model the application. Decomposing the application is concerned with gaining an understanding of the application and how it interacts with external entities. This involves the applying the following steps to model the application:  
 
 \begin{itemize}
@@ -131,36 +130,62 @@ Before defining a solution to the problem, its important to define and construct
 
 Our simple abstracted application has one external dependency, being the external MySQL database.  The MySQL database requires the web application to be configured with credentials to access it. 
 
-
-
-\begin{figure}[h!]
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{external-overview.jpg}
+    \includegraphics[width=0.5\textwidth]{external-overview.jpg}
     \caption{Connection between application and database}
 \end{figure}
 
 To connect to this database using JDBC, you will use the following Java method to pass in important authentication data to authorize access to the data store. At runtime the application requires the username and password pair in \emph{plain-text}. 
 
+
+\begin{figure}[!ht]
 \begin{lstlisting}
-	Connection conn = DriverManager.getConnection(url, "username", "password");
-\end{lstlisting} \\
+  Connection conn = DriverManager.getConnection(url, "username", "password");
+\end{lstlisting} 
+\caption{Java constructor for connecting to Database}
+\end{figure}
+
+For our simple case, we have stored the password in \emph{plain-text} in the configuration file. This password is required at runtime to ensure the connection between the web application and database is made. \\
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{config}
+    \caption{Connection between application, database and configuration file}
+\end{figure}
+
+These credentials are stored in the hard disk and the web application is required to make various system calls to get the information. Our application is made of various internal components that are involved with the credential  information that we want to protect. In Figure 4 we can see the high level architectural view of the web application of the involved components. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[height=0.2\paperheight]{high-level-archecuture}
+    \caption{High Level Architectural View of the System}
+\end{figure}
+
+\subsection*{3.3 Entities of the Application}
 
 
-For our simple case, we have stored the password in \emph{plain-text} in the configuration file. Our application is made of many internal components that are involved with the credential  information we want to protect. The application has following components that are involved with the storage of the credentials:
+\subsection*{3.4 Interaction Between Components}
+\subsubsection*{3.4.1 Running Application}
+The running application requires the \emph{plain-text} password for the connection to occur. The following steps occur during the runtime of the application to obtain the \emph{plain-text} password from the file on disk. 
 
-\begin{itemize}
-  \item Web Browser 
-  \item Tomcat Servlet
-  \item Tomcat Container 
-  \item Java Process
-  \item Operating System
-  \item Hardware
-\end{itemize}
+\begin{enumerate}
+\item The Java code is executed and gets to the line
+\begin{lstlisting}
+  Connection conn = DriverManager.getConnection(url, "username", "password");
+\end{lstlisting}
+This is is executed when the tomcat instance runs the complied servlet code.
+\item Java instance makes a request to the OS for the cleat text password required for logging into the database
+\item The operating system finds the location of the file and verifies whether the calling process is allowed access to the file.
+\item Once, the operating system verifies the process, the operating system will obtain a copy of the configuration file on disk and put into memory for the Java process to access.
+\item The java process will process the reference in memory of the configuration file and extract the password required to connect to the datastore.
+\end{enumerate}
 
 
 
 
 
+\subsection*{3.5 Threat Scenarios}
 
 
 
@@ -183,7 +208,7 @@ For our simple case, we have stored the password in \emph{plain-text} in the con
 \backmatter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\bibliographystyle{ieeetr}
-\bibliographystyle{acm}
+\bibliographystyle{ieeetr}
+%\bibliographystyle{acm}
 \bibliography{bib}
 \end{document}
