@@ -3,7 +3,7 @@
 %% $Date: 2010/04/23 02:40:16 $
 %% $Author: kevin $
 
-\documentclass[11pt, a4paper, twoside, openright, notitlepage]{report}
+\documentclass[11pt, a4paper, twoside, openany, notitlepage]{report}
 
 \usepackage{float} % lets you have non-floating floats
 
@@ -13,6 +13,9 @@
 %
 \newfloat{fig}{thp}{lof}[chapter]
 \floatname{fig}{Figure}
+
+\usepackage{etoolbox}
+
 
 %% These are standard LaTeX definitions for the document
 %%
@@ -62,7 +65,7 @@ The objective of this report is describe and demonstrate the progress of the Web
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\let\clearpage\relax
 \maketitle
 
 %\tableofcontents
@@ -76,12 +79,30 @@ The objective of this report is describe and demonstrate the progress of the Web
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{1 Introduction}
-As the web becomes increasingly complex, web applications become more complicated and dynamic. Web pages are no longer static; they contain dynamic content from many different external sources. To access these external services, the web application is configured with credentials to gain access to those systems - for example, username/passwords, certificates or API Keys. \\
+\chapter{Introduction}
+As the web becomes increasingly complex, web applications become more complicated and dynamic. Web pages are no longer static; they contain dynamic content from many different external sources such as an external data store or web service. To access these external services, the web application is configured with credentials to gain access to those systems - for example using username and password pair or certificates or even the use of API Keys. \\
+
+If an attacker compromises the web application or any component of the system, we want to make it difficult for them to steal the secret credentials and gain access to those external systems. \\
+
+This project explores this concept of management of secrets and credentials and analyzes the solution into two main phases. This project is split into two phases. The first phase analyzes the traditional situation, with a local physical server that we control. While the second phase of the project looks into how we can manage the secrets when we move the application into the cloud. This report has a major focus on the first phase of the project.
+
+\section{Background}
+
+\subsection{Public vs Private Key Encryption}
+Symmetric key encryption is an essential mechanism for protecting data at rest. We can use this to reduce the risk of unauthorized access to sensitive data. However, the use of symmetric key encryption brings with it certain dangers. Most important is that, once encrypted, we need a robust mechanism to ensure the encryption key is protected from unauthorized access. The key management system needs to grant access to trust worthy entities, and restrict unauthorized entities to ensure that the key is secure. The topic is well researched, and will be evaluated below. \\
+
+
+\subsection{Key Management}
+Key management is a broad concept used to define the secure mangement of encryption keys through
+
+
+\subsection{Public Key Infrastructure (PKI)}
+A public key infrastructure (PKI) is a set of hardware, software and procedures needed to manage and distribute digital certificates. The aim of PKI is to provide confidentiality, integrity, access control and authentication \cite{PKI:Online}.    The public key infrastructure provides a digital certificate that can identify an individual or process that can store the certificate. The public key infrastructure assumes the use of public key cryptography. 
 
 
 
-requires credentials to access these systems, such as API Keys, Username and Passwords and certificates which are stored on the server. \\
+
+
 
 Howev
 
@@ -89,42 +110,50 @@ Sriram
 Web applications require credentials to access these external systems.  
 
 
+\makeblankpage
+
+
+
+
+
+\chapter{Literature Review}
 
 
 
 
 
 
-\section*{2 Literature Review}
-\subsection*{2.1 Related Work}
-Many credential management systems have been developed in order to protect and secure the valuable credential data. 
+We use a PKI to bind public keys with respective user identities by means of a certificate authority. 
 
+\section{Interoperability Standards}
+\subsection{Key Management Interoperability Protocol (KMIP)}
+The Key Management Interoperability Protocol (KMIP) is a communication protocol between key management systems and encryption systems. The KMIP standard is controlled by the Organization for the Advancement of Structured Information Standards (OASIS). \\
 
- of the research conducted in this project has been about addressing the problem of Key Management and how we can securely mange our credential data for the external systems. 
+KMIP does not include any specification or description of a key management framework or infrastructure. 
 
+Many credential management systems have been developed in order to protect and secure the valuable credential data. Much of the research conducted in this project is about finding ways to address the problems associated with key management, and finding a solution so that we may securely manage credential data. Below are several approaches to managing encryption keys and credential information, and how we can apply the various strengths and differences to our project. \\
 
-\subsubsection*{2.2.1 PKI}
-\subsubsection*{2.2.1 Trust Management System}
-A trust management system provides a standard, general-purpose mechanism for specifying application security polices and credentials  \cite{blaze1999keynote}. Trust management systems were devised as a alternative to Access Control Lists (ACL). An ACL, is a list of permissions attached to an object. It will specify what users, or system processes are granted access to objects, and also specify what operations are allowed on given objects. \cite{acl-rfc} \\
+\section*{Trust Management Systems}
+A trust management system provides a standard, general-purpose mechanism for specifying application security polices and credentials.
+The credentials are bound to public keys, which are authorized to perform specific tasks such as connecting to a database. \cite{blaze1999keynote}. \\
 
+Trust management systems were devised as a alternative to Access Control Lists (ACL). An ACL, is a list of permissions attached to an object. It will specify what users, or system processes are granted access to objects, and also specify what operations are allowed on given objects. \cite{acl-rfc} These system need to grant or restrict access to resources according to some security policy. 
 
-
- to Security credentials allow applications to specify a delegation of trust among public keys. A trust management credential binds public keys to the authorization to perform specific tasks such as connecting to a database. \cite{blaze1999keynote}
-\subsubsection*{2.1.2 KeyNote}
+\section*{KeyNote}
 KeyNote is a 
-\subsubsection*{2.1.3 PERMIS}
-\subsubsection*{2.1.4 TPL}
-\subsubsection*{2.1.5 Kerberos}
+\section*{PERMIS}
+\section*{TPL}
+\section*{Kerberos}
 
+\makeblankpage
 
-
-\section*{3 Project Progress}
-\subsection*{3.1 Description of the Current Model}
+\chapter{Project Progress}
+\section*{Description of the Current Model}
 Given a 
 
 
 
-\subsection*{3.2 Decoupling the Application}
+\section*{Decoupling the Application}
 Before defining a solution to the problem, its important to define and construct a threat model to model the application. Decomposing the application is concerned with gaining an understanding of the application and how it interacts with external entities. This involves the applying the following steps to model the application:  
 
 \begin{itemize}
@@ -143,7 +172,7 @@ Our simple abstracted application has one external dependency, being the externa
     \caption{Connection between application and database}
 \end{figure}
 
-To connect to this database using JDBC, you will use the following Java method to pass in important authentication data to authorize access to the data store. At runtime the application requires the username and password pair in \emph{plain-text}. 
+To connect to this database using JDBC, you will use the following Java method to pass in important authentication data to authorize access to the data store. At runtime the application requires the username and password pair in \emph{plain-text}. \\
 
 
 \begin{figure}[!ht]
@@ -169,11 +198,11 @@ These credentials are stored in the hard disk and the web application is require
     \caption{High Level Architectural View of the System}
 \end{figure}
 
-\subsection*{3.3 Entities of the Application}
+\section*{Entities of the Application}
 
 
-\subsection*{3.4 Interaction Between Components}
-\subsubsection*{3.4.1 Running Application}
+\section*{Interaction Between Components}
+\section*{Running Application}
 The running application requires the \emph{plain-text} password for the connection to occur. The following steps occur during the runtime of the application to obtain the \emph{plain-text} password from the file on disk. 
 
 \begin{enumerate}
@@ -198,19 +227,19 @@ This is is executed when the tomcat instance runs the complied servlet code.
 
 
 
-\subsection*{3.5 Threat Scenarios}
+\section*{Threat Scenarios}
 
 
 
 
 
-\section*{4 Future Plans}
+\chapter{Future Plans}
 
 
 
 
 
-\section*{5 Feedback Required}
+\chapter{Feedback Required}
 
 
 
