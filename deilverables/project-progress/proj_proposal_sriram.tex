@@ -211,6 +211,14 @@ Disk Controller  & The disk controller is where the configuration file is stored
 \label{trust-level}
 \end{table}
 
+\subsection*{Users Roles of the Application}
+As mentioned above, the configuration file needs to be protected via ACLs to ensure authorized access. Before defining the policy, its important to highlight the involved users in the application. The following user roles are involved with the application:
+\begin{itemize}
+\item \textbf{Tomcat Account}: The tomcat account is the limited account that runs the tomcat processes including the JVM process. 
+\item \textbf{Root User}: The root user is the user that superuser account that has full access to the system. These users have elevated privileges on the system to configure and management the system
+\item \textbf{Administrators of the Tomcat}: These are the users who administrate the tomcat container and also have access to the deployment details.
+\end{itemize}
+
 \subsection*{Interaction Between Components}
 \subsection*{Running Application}
 The running application requires the \emph{plain-text} password for the connection to occur. The following steps occur during the runtime of the application to obtain the \emph{plain-text} password from the file on disk. 
@@ -234,14 +242,33 @@ This is is executed when the tomcat instance runs the complied servlet code.
 \end{figure}
 
 
-
 \subsection*{Threat Scenarios}
+After completing the analysis above, we can slowly see the different entities and users involved with the application and how it manages its credentials. We can now generate a list of threat scenarios that affect the application's secrets if an attacker where to compromise the entity. \\
+
+\begin{itemize}
+\item If an attacker is able to inject code into the system via the web browser entry point, it will be executed as the tomcat process. This can be proved to be dangerous because the tomcat process has read access to the file and knows the location of the encryption on key. Armed with both of these tools. After getting to this information, the attacker can use this data to connect the external system. This is problematic because its difficult to figure out if the legitimate tomcat process is requesting the data or the attacker because the attacker is hidden by the facade of the tomcat process.
+\item Given the application does not free an allocated block of memory which has the remains of the password. This can cause an attacker to read from this allocated block and read the secret. This type of threat is only a thread if it happens in the kernel-land process
+\item Given an attacker has access to the JVM. Any code that is executed as the JVM is executed as the tomcat precess as well. Which means given the attacker can run code or view the complied class file, the attacker is able read the secret
+\item Given an web browser is given access to more files other than the webroot. It means the attacker is able to view important configuration data, which may involve the configuration data. 
+\item Once the attacker has control of the hard disk. The attacker is able to read the configuration file and read the secret.
+\item If an attacker is able to deploy tomcat applications. He will have the capability to run applications that request for the password from the configuration file. As the system does not differentiate between different applications it will be hard to ensure that the secrets will be safe.
+\item If the attacker is able to gain access to either Root or Tomcat Process, in the operating system later of the application, the attacker will be allowed to execute arbitrary  commands which inturn can reveal secret.
+\item If the attacker is able to gain access to a user account on system that allows him to read contents of files visible to Operating System Tomcat user account. he will be able to read the configuration data.
+\end{itemize} 
 
 
+\section{Working Plan}
+\subsection*{Future Stages}
+The main components remaining for the first phase of the project include designing, implementation and evaluation of the first phase. While the designing and implementation of the second phase of the project has not yet started. The project thus far has been woefully unsuccessful in keeping to the original outline as seen in Figure~\ref{gantt}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{gannt.png}
+    \caption{Gantt Chart}
+    \label{gantt}
+\end{figure}
 
-
-\section{Future Plans}
+\subsection*{Evaluation}
 
 
 
