@@ -80,17 +80,22 @@ The objective of this report is describe and demonstrate the progress of the Web
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
-As the web becomes increasingly complex, web applications become more complicated and dynamic. Web pages are no longer static; they contain dynamic content from many different external sources such as an external data store or web service. To access these external services, the web application is configured with credentials to gain access to those systems - for example using username and password pair or certificates or even the use of API Keys. \\
-
-If an attacker compromises the web application or any component of the system, we want to make it difficult for them to steal the secret credentials and gain access to those external systems. \\
+As the web becomes increasingly complex, web applications become more complicated and dynamic. Web pages are no longer static; they contain dynamic content from many different external sources such as an external data store or web service. To access these external services, the web application is configured with credentials to gain access to those systems - for example using username and password pair or certificates or even the use of API Keys. This credential data will be stored on disk. Access to these secrets, allows attackers to gain access to these external services. Therefore if an attacker compromises the web application or any component of the system, we want to make it difficult for them to steal the secret credentials and gain access to those external systems. Given this threat, we need a proper management system that can securely manage these security credentials throughout the application life cycle.\\
 
 This project explores this concept of manging these secrets and analyzes the solution into two main phases. The first phase analyzes the traditional situation, with a local physical server that we control. While the second phase of the project looks into how we can manage the secrets when we move the application into the cloud. This preliminary progress report has a major focus on the first phase of the project. 
+
+\subsection*{Key Management}
+The core problem illustrated in this project is secure key management. Key management is a broad concept used to define the secure management of secret keys or credentials. These valuable keys need to be securely managed and have proper authorization mechanisms to ensure that key external services are not compromised. \\
+
+In this project we analyze the problem of key management via three main high level objectives.
+\begin{itemize}
+
+\end{itemize}
+
 
 \subsection*{Public vs Private Key Encryption}
 Symmetric key encryption is an essential mechanism for protecting data at rest. We can use this to reduce the risk of unauthorized access to sensitive data. However, the use of symmetric key encryption brings with it certain dangers. Most important is that, once encrypted, we need a robust mechanism to ensure the encryption key is protected from unauthorized access. The key management system needs to grant access to trust worthy entities, and restrict unauthorized entities to ensure that the key is secure. The topic is well researched, and will be evaluated below. 
 
-\subsection*{Key Management}
-Key management is a broad concept used to define the secure mangement of encryption keys through
 
 \subsection*{Public Key Infrastructure (PKI)}
 A public key infrastructure (PKI) is a set of hardware, software and procedures needed to manage and distribute digital certificates. The aim of PKI is to provide confidentiality, integrity, access control and authentication \cite{PKI:Online}.    The public key infrastructure provides a digital certificate that can identify an individual or process that can store the certificate. The public key infrastructure assumes the use of public key cryptography. 

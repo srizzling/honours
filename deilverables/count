@@ -1,0 +1,220 @@
+
+ [11pt, a4paper, twoside, notitlepage] article 
+
+  float    cite 
+  url  
+  fig  Figure 
+
+
+
+
+  Web Application Key Management Progress Report 
+  Sriram Venkatesh 
+
+ [image,ecs] vuwproject  
+
+
+  Bachelor of Engineering 
+
+  Dr Ian Welch, Michael Gannon,  Nick Clarke, Dr Kris Bubendorfer 
+
+
+   
+
+document  
+
+
+
+
+
+abstract  
+The objective of this report is describe and demonstrate the progress of the Web Application Key Management project and develop a plan for the remainder of the project. The project looks at how applications can manage encrypted credential keys for secure web applications. The project is split into two phases, where we look into the traditional case and also a modern case into the cloud. The literature review conducted finds there have been various attempts to solve the issue. This report looks at a comparative view of the best option by comparing various threat models and abstractions. 
+abstract  
+
+
+
+
+
+
+
+
+
+
+
+
+  Introduction 
+As the web becomes increasingly complex, web applications become more complicated and dynamic. Web pages are no longer static; they contain dynamic content from many different external sources such as an external data store or web service. To access these external services, the web application is configured with credentials to gain access to those systems - for example using username and password pair or certificates or even the use of API Keys. This credential data will be stored on disk. Access to these secrets, allows attackers to gain access to these external services. Therefore if an attacker compromises the web application or any component of the system, we want to make it difficult for them to steal the secret credentials and gain access to those external systems. Given this threat, we need a proper management system that can securely manage these security credentials throughout the application life cycle.
+
+
+This project explores this concept of manging these secrets and analyzes the solution into two main phases. The first phase analyzes the traditional situation, with a local physical server that we control. While the second phase of the project looks into how we can manage the secrets when we move the application into the cloud. This preliminary progress report has a major focus on the first phase of the project. 
+
+  Key Management 
+Key management is a broad concept used to define the secure management of encryption keys through
+
+
+  Public vs Private Key Encryption 
+Symmetric key encryption is an essential mechanism for protecting data at rest. We can use this to reduce the risk of unauthorized access to sensitive data. However, the use of symmetric key encryption brings with it certain dangers. Most important is that, once encrypted, we need a robust mechanism to ensure the encryption key is protected from unauthorized access. The key management system needs to grant access to trust worthy entities, and restrict unauthorized entities to ensure that the key is secure. The topic is well researched, and will be evaluated below. 
+
+
+  Public Key Infrastructure (PKI) 
+A public key infrastructure (PKI) is a set of hardware, software and procedures needed to manage and distribute digital certificates. The aim of PKI is to provide confidentiality, integrity, access control and authentication   PKI:Online .    The public key infrastructure provides a digital certificate that can identify an individual or process that can store the certificate. The public key infrastructure assumes the use of public key cryptography. 
+
+
+
+
+  Literature Review 
+
+We use a PKI to bind public keys with respective user identities by means of a certificate authority. 
+
+  Interoperability Standards 
+  Key Management Interoperability Protocol (KMIP) 
+The Key Management Interoperability Protocol (KMIP) is a communication protocol between key management systems and encryption systems. The KMIP standard is controlled by the Organization for the Advancement of Structured Information Standards (OASIS). 
+
+
+KMIP does not include any specification or description of a key management framework or infrastructure. The problem addressed by KMIP is primarily that of standardizing communication between cypto clients that need to use the keys and key management systems that generate and manage those keys. Therefore, web application developers will be able to deploy a single key management infrastructure to manage keys for the different types of keys in different applications. 
+
+
+KMIP has three key elements in the definition of the protocol:
+enumerate  
+    Object:  The object itself for which operations are performed with. This object can include the systematics key, the antisymmetric key, digital certificate.
+    Operations:  These are the actions taken with respect to objects. For example, retrieval of an object from a key management system or modifying attributes of an object and so on.
+
+
+enumerate  
+
+
+
+
+
+
+Many credential management systems have been developed in order to protect and secure the valuable credential data. Much of the research conducted in this project is about finding ways to address the problems associated with key management, and finding a solution so that we may securely manage credential data. Below are several approaches to managing encryption keys and credential information, and how we can apply the various strengths and differences to our project. 
+
+
+  Trust Management Systems 
+A trust management system provides a standard, general-purpose mechanism for specifying application security polices and credentials.
+The credentials are bound to public keys, which are authorized to perform specific tasks such as connecting to a database.   blaze1999keynote . 
+
+
+Trust management systems were devised as a alternative to Access Control Lists (ACL). An ACL, is a list of permissions attached to an object. It will specify what users, or system processes are granted access to objects, and also specify what operations are allowed on given objects.   acl-rfc  These system need to grant or restrict access to resources according to some security policy. 
+
+  KeyNote 
+KeyNote is a 
+  PERMIS 
+  TPL 
+  Kerberos 
+
+
+
+
+  Project Progress 
+  Description of the Current Model 
+Given a 
+
+
+
+  Decoupling the Application 
+Before defining a solution to the problem, its important to define and construct a threat model to model the application. Decomposing the application is concerned with gaining an understanding of the application and how it interacts with external entities. This involves the applying the following steps to model the application:  
+
+itemize  
+    Create use cases to understand how the application is used.
+    Identify the Entry Points to see where a potential attacker could interact with the application.
+    Identify Assets that the attacker would be interested in.
+    Identify assumptions for the components of the application, that an attacker would be interested in.
+    Identify trust levels which represent the access rights the application with grant to external entities. 
+itemize  
+
+Our simple abstracted application has one external dependency, being the external MySQL database.  The MySQL database requires the web application to be configured with credentials to access it. 
+
+figure  [h!]
+    
+
+     [width=0.5 ] external-overview.jpg 
+      Connection between application and database 
+figure  
+
+To connect to this database using JDBC, you will use the following Java method to pass in important authentication data to authorize access to the data store. At runtime the application requires the username and password pair in   plain-text . 
+
+
+
+figure  [h!]
+lstlisting  
+  Connection conn = DriverManager.getConnection(url, "username", "password");
+lstlisting   
+  Java constructor for connecting to Database 
+figure  
+
+For our simple case, we have stored the password in   plain-text  in the configuration file. This password is required at runtime to ensure the connection between the web application and database is made. 
+
+
+figure  [h!]
+    
+
+     [width=0.5 ] config 
+      Connection between application, database and configuration file 
+figure  
+
+These credentials are stored in the hard disk and the web application is required to make various system calls to get the information. Our application is made of various internal components that are involved with the credential  information that we want to protect. In Figure 4 we can see the high level architectural view of the web application of the involved components. 
+
+figure  [h!]
+    
+
+     [height=0.2 ] high-level-archecuture 
+      High Level Architectural View of the System 
+figure  
+
+  Entities of the Application 
+
+
+  Interaction Between Components 
+  Running Application 
+The running application requires the   plain-text  password for the connection to occur. The following steps occur during the runtime of the application to obtain the   plain-text  password from the file on disk. 
+
+enumerate  
+  The Java code is executed and gets to the line
+lstlisting  
+  Connection conn = DriverManager.getConnection(url, "username", "password");
+lstlisting  
+This is is executed when the tomcat instance runs the complied servlet code.
+  Java instance makes a request to the OS for the cleat text password required for logging into the database
+  The operating system finds the location of the file and verifies whether the calling process is allowed access to the file.
+  Once, the operating system verifies the process, the operating system will obtain a copy of the configuration file on disk and put into memory for the Java process to access.
+  The java process will process the reference in memory of the configuration file and extract the password required to connect to the datastore.
+enumerate  
+
+figure  [h!]
+    
+
+     [height=0.2 ] sequence diagram 
+      Diagram of Sequence between entities. 
+figure  
+
+
+
+
+
+  Threat Scenarios 
+
+
+
+
+
+  Future Plans 
+
+
+
+
+
+  Feedback Required 
+
+
+
+
+
+
+
+
+  * 
+  ieeetr 
+  bib 
+
+document  
