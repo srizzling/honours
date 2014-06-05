@@ -62,7 +62,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
-The objective of this report is describe and demonstrate the progress of the Web Application Key Management project and develop a plan for the remainder of the project. The project looks at how applications can manage encrypted credential keys for secure web applications. The project is split into two phases, where we look into the traditional case and also a modern case into the cloud. The literature review conducted finds there have been various attempts to solve the issue. This report looks at a comparative view of the best option by comparing various threat models and abstractions. 
+The objective of this report is describe and demonstrate the progress of the Web Application Key Management project and develop a plan for the remainder of the project. The project looks at how applications can manage encrypted credential keys for secure web applications. The project is split into two phases, where we look into the traditional case and also a modern case of moving the application into the cloud. The literature review conducted finds there have been various attempts to solve the issue. This report looks at a comparative view of the best option by comparing various threat models and abstractions. 
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -213,89 +213,41 @@ The traditional case involves a local physical server that we control. The web a
 \makeblankpage
 
 \subsection*{Decoupling the Application}
+
 \subsubsection*{Actors of the Application}
-These are the actors that are involved with the baseline model.
+Our application is made of various internal components that are involved with the credential  information that we want to protect. 
 \begin{itemize}
 	\item \textbf {Web Browser} \\
+	The User using the web application from the external source
 	\item \textbf{Web Application} \\
-	
+	The web application is the application that is run on top of the tomcat container. The web application itself as distinct from the Tomcat container software.
 	\item \textbf{Tomcat Container} \\
-	\item \textbf{Java Process} \\
+	The Tomcat container is Tomcat process that runs the Web application code
+	\item \textbf{Java Process/Java Virtual Machine} \\
+	The Tomcat servlet is run on top of a JVM. The code is compiled and the resulting bytecode is run within the JVM.
 	\item \textbf {Operating System} \\
+	The operating system is an abstracted layer that allows processes above to request for resources lower in the system such as memory or files on disk. The operating system has two layers.
 	\begin{itemize}
 		\item \textbf {Operating System User Accounts } \\
+		The different user accounts associated with the operating system. These are processes which are run under the user. 
 		\item \textbf {Operating System Facilities } \\
+		The operating system has  the ability to make system calls to the via
+		the OS kernel only
 	\end{itemize}
-	\item \textbf {Hardware} \\
-\end{itemize}
-
-A more in depth technical of the actors, and sequence of events is included in the Appendix.
-
-\subsubsection*{Trust Model Assumptions}
-\begin{itemize}
-\item We assume that the connection between the Application Server and Database is secure.
 \end{itemize}
 
 
-
-
-
-
-
-
-Our simple abstracted application has one external dependency, being the external MySQL database.  The MySQL database requires the web application to be configured with credentials to access it. 
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.7\textwidth]{external-overview.jpg}
-    \caption{Connection between application and database}
-\end{figure}
-
-To connect to this database using JDBC, you will use the following Java method to pass in important authentication data to authorize access to the data store. At runtime the application requires the username and password pair in \emph{plain-text}. 
-
-
-\begin{figure}[h!]
-\begin{lstlisting}
-  Connection conn = DriverManager.getConnection(url, "username", "password");
-\end{lstlisting} 
-\caption{Java constructor for connecting to Database}
-\end{figure}
-
-For our simple case, we have stored the password in \emph{plain-text} in the configuration file. This password is required at runtime to ensure the connection between the web application and database is made. 
-
-These credentials are stored in the hard disk and the web application is required to make various system calls to get the information.
-
-\subsection*{Entities of the Application}
- Our application is made of various internal components that are involved with the credential  information that we want to protect. The application has 6 entities involved with the passing of the secret information. In Figure 4 we can see the high level architectural view of the web application of the involved components. 
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[height=0.3\paperheight]{high-level-archecuture}
-    \caption{High Level Architectural View of the System}
-\end{figure}
-
-These entities have different roles with the transport and management of the credential data, which is summarized in Table~\ref{trust-level} on Page~\pageref{trust-level}. 
-
-\begin{table}[H]
-\begin{tabularx}{\textwidth}{|X|X|X|X|}
-\hline
-\textbf{Name} & \textbf{Description} & \textbf{Trust Level} \\ \hline
-Tomcat Process   & The Tomcat process is the user that is running the tomcat server. & The Tomcat process has read access to key storage space. The tomcat process does not require to write to configuration file. \\ \hline
-JVM  & The Tomcat servlet is run on top of a JVM. The code is compiled and the resulting bytecode is run within the JVM.  & The JVM has access to the bytecode of application and theoretically has access to the plain-text password passed on to the JDBC during runtime. \\ \hline
-Operating System & The operating system is abstracted layer that allows processes above to request for resources lower in the system such as memory or files on disk & The Operating System has access to the configuration file given correct user permissions and access controls are placed in this layer.  \\ \hline
-Memory  & During runtime of the application the operating system will likely store the password in memory for easy access. & The Memory has direct reference value of the password during the runtime of the applications   \\ \hline
-Disk Controller  & The disk controller is where the configuration file is stored.    & The disk has the configuration file on disk, thus has direct access to the file, unless there are hardware protections placed here. \\ \hline
-\end{tabularx}
-\caption{Roles and Trust Levels of different entities in the application}
-\label{trust-level}
-\end{table}
-
-\subsection*{Users Roles of the Application}
-As mentioned above, the configuration file needs to be protected via ACLs to ensure authorized access. Before defining the policy, its important to highlight the involved users in the application. The following user roles are involved with the application:
+\subsubsection*{Users Roles of the Application}
+The configuration file needs to be protected via ACLs to ensure authorized access. Before defining the policy, its important to highlight the involved users in the application. The following user roles are involved with the application:
 \begin{itemize}
 \item \textbf{Tomcat Account}: The tomcat account is the limited account that runs the tomcat processes including the JVM process. 
 \item \textbf{Root User}: The root user is the user that superuser account that has full access to the system. These users have elevated privileges on the system to configure and management the system
 \item \textbf{Administrators of the Tomcat}: These are the users who administrate the tomcat container and also have access to the deployment details.
+\end{itemize}
+
+\subsubsection*{Trust Model Assumptions}
+\begin{itemize}
+\item We assume that the connection between the Application Server and Database is secure.
 \end{itemize}
 
 \subsection*{Interaction Between Components}
@@ -303,22 +255,12 @@ As mentioned above, the configuration file needs to be protected via ACLs to ens
 The running application requires the \emph{plain-text} password for the connection to occur. The following steps occur during the runtime of the application to obtain the \emph{plain-text} password from the file on disk. 
 
 \begin{enumerate}
-\item The Java code is executed and gets to the line
-\begin{lstlisting}
-  Connection conn = DriverManager.getConnection(url, "username", "password");
-\end{lstlisting}
-This is is executed when the tomcat instance runs the complied servlet code.
-\item Java instance makes a request to the OS for the cleat text password required for logging into the database
+\item When the password is required for the database connection, the Java code executes a JDK method to read a file. This is is executed when the tomcat instance runs the complied servlet code.
+\item This JDK method will be abstracted to a system call, which will tell the operating system to read that file. 
 \item The operating system finds the location of the file and verifies whether the calling process is allowed access to the file.
 \item Once, the operating system verifies the process, the operating system will obtain a copy of the configuration file on disk and put into memory for the Java process to access.
 \item The Java process will process the reference in memory of the configuration file and extract the password required to connect to the datastore.
 \end{enumerate}
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[height=0.2\paperheight]{sequence_diagram}
-    \caption{Diagram of Sequence between entities.}
-\end{figure}
 
 
 \subsection*{Threat Scenarios}
@@ -326,7 +268,6 @@ After completing the analysis above, we can slowly see the different entities an
 
 \begin{itemize}
 \item If an attacker is able to inject code into the system via the web browser entry point, it will be executed as the tomcat process. This can be proved to be dangerous because the tomcat process has read access to the file and knows the location of the encryption on key. Armed with both of these tools. After getting to this information, the attacker can use this data to connect the external system. This is problematic because its difficult to figure out if the legitimate tomcat process is requesting the data or the attacker because the attacker is hidden by the facade of the tomcat process.
-\item Given the application does not free an allocated block of memory which has the remains of the password. This can cause an attacker to read from this allocated block and read the secret. This type of threat is only a thread if it happens in the kernel-land process
 \item Given an attacker has access to the JVM. Any code that is executed as the JVM is executed as the tomcat precess as well. Which means given the attacker can run code or view the complied class file, the attacker is able read the secret
 \item Given an web browser is given access to more files other than the webroot. It means the attacker is able to view important configuration data, which may involve the configuration data. 
 \item Once the attacker has control of the hard disk. The attacker is able to read the configuration file and read the secret.
@@ -338,7 +279,7 @@ After completing the analysis above, we can slowly see the different entities an
 
 \section{Working Plan}
 \subsection*{Future Stages}
-The main components remaining for the first phase of the project include designing, implementation and evaluation of the first phase. While the designing and implementation of the second phase of the project has not yet started. The project thus far has been woefully unsuccessful in keeping to the original outline as seen in Figure~\ref{gantt}
+The main components remaining for the first phase of the project include designing, implementation and evaluation of the first phase. While the designing and implementation of the second phase of the project has not yet started. An additional project analysis of the baseline model, has been added to the project phase to gain clarity of the project aims and goals. This has slightly shifted the timeline of the project as seen in Figure~\ref{gantt}
 
 \begin{figure}[h!]
     \centering
@@ -356,6 +297,13 @@ After designing and implementing a solution, how do we evaluated the better solu
 \item Rank the threat in terms of impact and damage on the application
 \end{itemize}
 
+\subsection*{Feedback Requested}
+The following feedback would be greatly appreciated and helpful for the second half of the project.
+
+\begin{itemize}
+\item Comments on evaluation plan that has been outlined.
+\item Comments regarding threats generated in section 4.
+\end{itemize}
 
 
 
