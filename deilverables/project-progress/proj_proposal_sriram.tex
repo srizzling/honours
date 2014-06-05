@@ -124,17 +124,17 @@ These six attributes are described as follows:
 Although it is important to consider all these security attributes when designing a web application, its not always possible or necessarily required that all six attributes be fulfilled completely. 
 
 \subsection*{Cryptographic Basics}
-The basic aim of \emph{cryptography} is to enable two people to communicate over an insecure channel in a secure way. The term cryptography describes the term cryptography describes a range of cryptographic services including techniques for providing both confidentiality and authentication. 
+The basic aim of \emph{cryptography} is to enable two people to communicate over an insecure channel in a secure way. The term cryptography describes a range of cryptographic services including techniques for providing both confidentiality and authentication. 
 
 \subsubsection*{Symmetric Encryption}
 Symmetric Encryption, has a single secret key that it can use to encrypt plaintext. Then using the same secret key another user can decrypt it \cite{ferguson2003practical}. Symmetric key encryption is an essential mechanism for protecting data at rest. We can use this to reduce the risk of unauthorized access to sensitive data. However, the use of symmetric key encryption brings with it certain dangers. Most important is that, once encrypted, we need a robust mechanism to ensure the encryption key is protected from unauthorized access. The key management system needs to grant access to trust worthy entities, and restrict unauthorized entities to ensure that the key is secure. 
 
 \subsubsection*{Asymmetric Cryptography}
 Asymmetric Cryptography is a cryptographic algorithm which requires two separate keys, one of which is private and one which is public \cite{ferguson2003practical}.
-The public and private key pair comprise of two uniquely related cryptographic keys. The public key is made available to everyone via a publicly accessible repository or directory. While on the other hand the private key must remain \emph{confidential} to its respective owner. Because the key pair is mathematically related, the public is used to encrypt the \emph{plaintext}, whereas the private key is used to decrypt the \emph{ciphertext} produced by the public key. Therefore, public key cryptography can therefore confidentiality, as the user with the private key is only able decrypt the message encrypted with the public key \cite{pub-key}.
+The public and private key pair comprise of two uniquely related cryptographic keys. The public key is made available to everyone via a publicly accessible repository or directory. While on the other hand the private key must remain \emph{confidential} to its respective owner. Because the key pair is mathematically related, the public key is used to encrypt the \emph{plaintext}, whereas the private key is used to decrypt the \emph{ciphertext} produced by the public key. Therefore, Asymmetric cryptography can provide confidentiality, as the user with the private key is only one able to decrypt the message \cite{pub-key}.
 
 \subsection*{Basic Key Management}
-Encryption Key Management is the administration of tasks involved with protecting storing, backing up and organizing encryption keys or secrets. \cite{defination:key-management}. It considers the general management of cryptographic keys, and the means by which public keys are distributed. The study of key management can be broken down into phases concerning the life-cycle of a cryptographic key. These four phases are: \\
+Encryption Key Management is the administration of tasks involved with protecting, storing, backing up and organizing encryption keys or secrets. \cite{defination:key-management}. It considers the general management of cryptographic keys, and the means by which public keys are distributed. The study of key management can be broken down into phases concerning the life-cycle of a cryptographic key. These four phases are: \\
 
 \begin{enumerate}
 \item \textbf{Key Generation} which covers the creation of the keys
@@ -255,7 +255,7 @@ The configuration file needs to be protected via ACLs to ensure authorized acces
 The running application requires the \emph{plain-text} password for the connection to occur. The following steps occur during the runtime of the application to obtain the \emph{plain-text} password from the file on disk. 
 
 \begin{enumerate}
-\item When the password is required for the database connection, the Java code executes a JDK method to read a file. This is is executed when the tomcat instance runs the complied servlet code.
+\item When the password is required for the database connection, the Java code executes a JDK method to read a file. This is executed when the tomcat instance runs the complied servlet code.
 \item This JDK method will be abstracted to a system call, which will tell the operating system to read that file. 
 \item The operating system finds the location of the file and verifies whether the calling process is allowed access to the file.
 \item Once, the operating system verifies the process, the operating system will obtain a copy of the configuration file on disk and put into memory for the Java process to access.
