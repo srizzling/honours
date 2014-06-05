@@ -92,7 +92,7 @@ In this project we analyze the problem of key management via three main high lev
 
 \begin{enumerate}
 \item \textbf{Secure Key Management} \\
-A secure key management plan needs to ensure that keys are secure throughout the life cycle of the web application. This involves how it generates the keys at boot, and how to destroys any keys during the shutdown of these services \cite{entrprise-guide}. The application also requires the key for to decrypt the data at runtime. 
+A secure key management plan needs to ensure that keys are secure throughout the life cycle of the web application. This involves how it generates the keys at boot, and how to destroys any keys during the shutdown of these services \cite{entrprise-guide}. The application also requires the key for it to be able to decrypt the data at runtime. 
 
 \item \textbf{Secure Key Storage} \\
 Keys must be securely stored throughout their operational life. The key should be placed in a secure storage and details around how the keys are protected evolve around the web application  \cite{entrprise-guide}. 
@@ -107,25 +107,30 @@ Measures must be implemented to ensure that keys can be used only for authorized
 \section{Literature Review}
 This section describes different key management models and algorithms that could be applied to this project. However, before the key management models and algorithms are described, it is necessary to provide a general introduction into computer security. 
 
-\subsection*{What is a Secure System?}
-Before someone can determine whether something is secure or not, we have to first create a baseline for what is secure. In computer security, a typical approach is to require confidentiality, integrity, availability, authentication and non-repudiation \cite{Pfleeger:2006:SC:1177321}. \\
+\subsection*{System Security}
+Before someone can determine whether something is secure or not, we have to first create a baseline for what is a \emph{secure} system. In computer security, a typical approach is to require confidentiality, integrity, availability, authentication and non-repudiation in the system\cite{Pfleeger:2006:SC:1177321}. \\
 
 These five attributes are described as follows:
 
 \begin{enumerate}
-\item \textbf{Secure Key Management} \\
-
+\item \textbf{Confidentiality} is to ensure that secret information is never disclosed to unauthorized entities.
+\item \textbf{Integrity} is to ensure that data will not be corrupted.
+\item \textbf{Availability} is a guarantee of accessibility of data in the system.
+\item \textbf{Authentication} is the ability to verify the identity of an entity.
+\item \textbf{Non-repudiation} means that one cannot claim that certain actions were never performed. For example, if a message is transmitted or the act of signing the message.
 \end{enumerate}
 
-
-\subsection*{Public-Key and Private-Key Encryption}
-Public-Key Encryption, also known as Symmetric-Key Encryption, has a single secret key that it can use to encrypt plaintext. Then using the same secret key another user can decrypt it \cite{ferguson2003practical}. 
+Although it is important to consider all these security attributes when designing a web application, its not always possible or necessarily required that all five attributes be fulfilled completely.
 
 
+\subsection*{Cryptographic Basics}
+Symmetric key encryption is an essential mechanism for protecting data at rest. We can use this to reduce the risk of unauthorized access to sensitive data. However, the use of symmetric key encryption brings with it certain dangers. Most important is that, once encrypted, we need a robust mechanism to ensure the encryption key is protected from unauthorized access. The key management system needs to grant access to trust worthy entities, and restrict unauthorized entities to ensure that the key is secure. \\
 
-Asymmetric Cryptography is a cryptographic algorithm which requires two separate keys, one of which is private and one which is public \cite{ferguson2003practical}. The public is used to encrypt the \emph{plaintext}, whereas the private key is used to decrypt \emph{ciphertext}.
 
 
+
+Asymmetric Cryptography is a cryptographic algorithm which requires two separate keys, one of which is private and one which is public \cite{ferguson2003practical}.
+The public and private key pair comprise of two uniquely related cryptographic keys. The public key is made available to everyone via a publicly accessible repository or directory. While on the other hand the private key must remain \emph{confidential} to its respective owner. Because the key pair is mathematically related, the public is used to encrypt the \emph{plaintext}, whereas the private key is used to decrypt the \emph{ciphertext} produced by the public key. Therefore, public key cryptography can therefore confidentiality, as the user with the private key is only able decrypt the message encrypted with the public key \cite{pub-key}.
 
 
 
@@ -155,8 +160,7 @@ KMIP has three key elements in the definition of the protocol:
 Many credential management systems have been developed in order to protect and secure the valuable credential data. Much of the research conducted in this project is about finding ways to address the problems associated with key management, and finding a solution so that we may securely manage credential data. \\
 
 \subsection*{Trust Management Systems}
-A trust management system provides a standard, general-purpose mechanism for specifying application security polices and credentials.
-The credentials are bound to public keys, which are authorized to perform specific tasks such as connecting to a database. \cite{blaze1999keynote}. \\
+A trust management system provides a standard, general-purpose mechanism for specifying application security polices and credentials. The credentials are bound to public keys, which are authorized to perform specific tasks such as connecting to a database. \cite{blaze1999keynote}. \\
 
 Trust management systems were devised as a alternative to Access Control Lists (ACL). An ACL, is a list of permissions attached to an object. It will specify what users, or system processes are granted access to objects, and also specify what operations are allowed on given objects. \cite{acl-rfc} These system need to grant or restrict access to resources according to some security policy. \\
 
